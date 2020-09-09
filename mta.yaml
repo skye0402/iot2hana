@@ -48,10 +48,13 @@ resources:
 # ------------------------------------------------------------
  - name: iot2hana-db
 # ------------------------------------------------------------
-   type: com.sap.xs.hdi-container
+   type: org.cloudfoundry.existing-service
    parameters:
-     service: hana  # or 'hanatrial' on trial landscapes
-     service-plan: hdi-shared
+     service-name: iot2hana-db
+   #type: com.sap.xs.hdi-container
+   #parameters:
+   #  service: hana  # or 'hanatrial' on trial landscapes
+   #  service-plan: hdi-shared
    properties:
      hdi-service-name: ${service-name}
 
