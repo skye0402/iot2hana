@@ -1,0 +1,11 @@
+---
+applications:
+  - name: iot2hana-db-deployer
+    path: .
+    no-route: true
+    health-check-type: process
+    memory: 128M
+    buildpacks:
+      - nodejs_buildpack
+    services:
+      - iot2hana-db

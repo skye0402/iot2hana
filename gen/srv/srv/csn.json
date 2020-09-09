@@ -1,0 +1,1091 @@
+{
+  "definitions": {
+    "AmbientDataService": {
+      "@source": "srv/ambient-service.cds",
+      "kind": "service"
+    },
+    "AmbientDataService.AmbientData": {
+      "kind": "entity",
+      "query": {
+        "SELECT": {
+          "from": {
+            "ref": [
+              "ambience.IoTData"
+            ]
+          }
+        }
+      },
+      "elements": {
+        "tenantId": {
+          "key": true,
+          "type": "cds.String",
+          "length": 40
+        },
+        "capabilityId": {
+          "key": true,
+          "type": "cds.String",
+          "length": 40
+        },
+        "sensorId": {
+          "key": true,
+          "type": "cds.String",
+          "length": 40
+        },
+        "timestamp": {
+          "key": true,
+          "type": "cds.Double"
+        },
+        "gatewayTimestamp": {
+          "type": "cds.Double"
+        },
+        "measures": {
+          "type": "cds.Composition",
+          "cardinality": {
+            "max": "*"
+          },
+          "targetAspect": {
+            "elements": {
+              "CO2": {
+                "type": "cds.Integer"
+              },
+              "temperature": {
+                "type": "cds.Double"
+              },
+              "humidity": {
+                "type": "cds.Double"
+              }
+            }
+          },
+          "target": "AmbientDataService.IoTData_measures",
+          "on": [
+            {
+              "ref": [
+                "measures",
+                "up_"
+              ]
+            },
+            "=",
+            {
+              "ref": [
+                "$self"
+              ]
+            }
+          ]
+        }
+      },
+      "$syntax": "projection"
+    },
+    "AmbientDataService.AmbientDataSac": {
+      "kind": "entity",
+      "@readonly": true,
+      "query": {
+        "SELECT": {
+          "from": {
+            "ref": [
+              "ambience.iotDataSac"
+            ]
+          }
+        }
+      },
+      "elements": {
+        "sensorId": {
+          "key": true,
+          "type": "cds.String",
+          "length": 40
+        },
+        "timestamp": {
+          "@Core.Computed": true,
+          "key": true,
+          "type": "cds.Timestamp"
+        },
+        "CO2": {
+          "type": "cds.Integer"
+        },
+        "temperature": {
+          "type": "cds.Double"
+        },
+        "humidity": {
+          "type": "cds.Double"
+        }
+      },
+      "$syntax": "projection"
+    },
+    "AmbientDataService.IoTData_measures": {
+      "kind": "entity",
+      "@cds.autoexposed": true,
+      "query": {
+        "SELECT": {
+          "from": {
+            "ref": [
+              "ambience.IoTData_measures"
+            ]
+          }
+        }
+      },
+      "elements": {
+        "up__tenantId": {
+          "@odata.containment.ignore": true,
+          "key": true,
+          "type": "cds.String",
+          "length": 40
+        },
+        "up__capabilityId": {
+          "@odata.containment.ignore": true,
+          "key": true,
+          "type": "cds.String",
+          "length": 40
+        },
+        "up__sensorId": {
+          "@odata.containment.ignore": true,
+          "key": true,
+          "type": "cds.String",
+          "length": 40
+        },
+        "up__timestamp": {
+          "@odata.containment.ignore": true,
+          "key": true,
+          "type": "cds.Double"
+        },
+        "up_": {
+          "type": "cds.Association",
+          "cardinality": {
+            "min": 1,
+            "max": 1
+          },
+          "target": "ambience.IoTData",
+          "on": [
+            {
+              "ref": [
+                "up_",
+                "tenantId"
+              ]
+            },
+            "=",
+            {
+              "ref": [
+                "up__tenantId"
+              ]
+            },
+            "and",
+            {
+              "ref": [
+                "up_",
+                "capabilityId"
+              ]
+            },
+            "=",
+            {
+              "ref": [
+                "up__capabilityId"
+              ]
+            },
+            "and",
+            {
+              "ref": [
+                "up_",
+                "sensorId"
+              ]
+            },
+            "=",
+            {
+              "ref": [
+                "up__sensorId"
+              ]
+            },
+            "and",
+            {
+              "ref": [
+                "up_",
+                "timestamp"
+              ]
+            },
+            "=",
+            {
+              "ref": [
+                "up__timestamp"
+              ]
+            }
+          ]
+        },
+        "CO2": {
+          "type": "cds.Integer"
+        },
+        "temperature": {
+          "type": "cds.Double"
+        },
+        "humidity": {
+          "type": "cds.Double"
+        }
+      }
+    },
+    "TrafficDataService": {
+      "@source": "srv/traffic-service.cds",
+      "kind": "service"
+    },
+    "TrafficDataService.SacTrafficData": {
+      "kind": "entity",
+      "@readonly": true,
+      "query": {
+        "SELECT": {
+          "from": {
+            "ref": [
+              "traffic.TrafficDataSac"
+            ]
+          }
+        }
+      },
+      "elements": {
+        "sensorId": {
+          "key": true,
+          "type": "cds.String",
+          "length": 40
+        },
+        "timestamp": {
+          "@Core.Computed": true,
+          "key": true,
+          "type": "cds.Timestamp"
+        },
+        "id": {
+          "type": "cds.String",
+          "length": 50
+        },
+        "detectionOccurences": {
+          "type": "cds.Integer"
+        },
+        "trackingOccurences": {
+          "type": "cds.Integer"
+        },
+        "measuredSpeed": {
+          "type": "cds.Double"
+        },
+        "class": {
+          "type": "cds.String",
+          "length": 30
+        },
+        "color": {
+          "type": "cds.String",
+          "length": 30
+        }
+      },
+      "$syntax": "projection"
+    },
+    "TrafficDataService.TrafficData": {
+      "kind": "entity",
+      "query": {
+        "SELECT": {
+          "from": {
+            "ref": [
+              "traffic.TrafficData"
+            ]
+          }
+        }
+      },
+      "elements": {
+        "tenantId": {
+          "key": true,
+          "type": "cds.String",
+          "length": 40
+        },
+        "capabilityId": {
+          "key": true,
+          "type": "cds.String",
+          "length": 40
+        },
+        "sensorId": {
+          "key": true,
+          "type": "cds.String",
+          "length": 40
+        },
+        "timestamp": {
+          "key": true,
+          "type": "cds.Double"
+        },
+        "gatewayTimestamp": {
+          "type": "cds.Double"
+        },
+        "measures": {
+          "type": "cds.Composition",
+          "cardinality": {
+            "max": "*"
+          },
+          "targetAspect": {
+            "elements": {
+              "id": {
+                "type": "cds.String",
+                "length": 50
+              },
+              "detectionOccurences": {
+                "type": "cds.Integer"
+              },
+              "trackingOccurences": {
+                "type": "cds.Integer"
+              },
+              "measuredSpeed": {
+                "type": "cds.Double"
+              },
+              "class": {
+                "type": "cds.String",
+                "length": 30
+              },
+              "classStdDeviation": {
+                "type": "cds.Double"
+              },
+              "color": {
+                "type": "cds.String",
+                "length": 30
+              },
+              "classAvgPropability": {
+                "type": "cds.Double"
+              },
+              "directionVerbal": {
+                "type": "cds.String",
+                "length": 30
+              },
+              "directionAngle": {
+                "type": "cds.Double"
+              }
+            }
+          },
+          "target": "TrafficDataService.TrafficData_measures",
+          "on": [
+            {
+              "ref": [
+                "measures",
+                "up_"
+              ]
+            },
+            "=",
+            {
+              "ref": [
+                "$self"
+              ]
+            }
+          ]
+        }
+      },
+      "$syntax": "projection"
+    },
+    "TrafficDataService.TrafficData_measures": {
+      "kind": "entity",
+      "@cds.autoexposed": true,
+      "query": {
+        "SELECT": {
+          "from": {
+            "ref": [
+              "traffic.TrafficData_measures"
+            ]
+          }
+        }
+      },
+      "elements": {
+        "up__tenantId": {
+          "@odata.containment.ignore": true,
+          "key": true,
+          "type": "cds.String",
+          "length": 40
+        },
+        "up__capabilityId": {
+          "@odata.containment.ignore": true,
+          "key": true,
+          "type": "cds.String",
+          "length": 40
+        },
+        "up__sensorId": {
+          "@odata.containment.ignore": true,
+          "key": true,
+          "type": "cds.String",
+          "length": 40
+        },
+        "up__timestamp": {
+          "@odata.containment.ignore": true,
+          "key": true,
+          "type": "cds.Double"
+        },
+        "up_": {
+          "type": "cds.Association",
+          "cardinality": {
+            "min": 1,
+            "max": 1
+          },
+          "target": "traffic.TrafficData",
+          "on": [
+            {
+              "ref": [
+                "up_",
+                "tenantId"
+              ]
+            },
+            "=",
+            {
+              "ref": [
+                "up__tenantId"
+              ]
+            },
+            "and",
+            {
+              "ref": [
+                "up_",
+                "capabilityId"
+              ]
+            },
+            "=",
+            {
+              "ref": [
+                "up__capabilityId"
+              ]
+            },
+            "and",
+            {
+              "ref": [
+                "up_",
+                "sensorId"
+              ]
+            },
+            "=",
+            {
+              "ref": [
+                "up__sensorId"
+              ]
+            },
+            "and",
+            {
+              "ref": [
+                "up_",
+                "timestamp"
+              ]
+            },
+            "=",
+            {
+              "ref": [
+                "up__timestamp"
+              ]
+            }
+          ]
+        },
+        "id": {
+          "type": "cds.String",
+          "length": 50
+        },
+        "detectionOccurences": {
+          "type": "cds.Integer"
+        },
+        "trackingOccurences": {
+          "type": "cds.Integer"
+        },
+        "measuredSpeed": {
+          "type": "cds.Double"
+        },
+        "class": {
+          "type": "cds.String",
+          "length": 30
+        },
+        "classStdDeviation": {
+          "type": "cds.Double"
+        },
+        "color": {
+          "type": "cds.String",
+          "length": 30
+        },
+        "classAvgPropability": {
+          "type": "cds.Double"
+        },
+        "directionVerbal": {
+          "type": "cds.String",
+          "length": 30
+        },
+        "directionAngle": {
+          "type": "cds.Double"
+        }
+      }
+    },
+    "ambience.IoTData": {
+      "kind": "entity",
+      "elements": {
+        "tenantId": {
+          "key": true,
+          "type": "cds.String",
+          "length": 40
+        },
+        "capabilityId": {
+          "key": true,
+          "type": "cds.String",
+          "length": 40
+        },
+        "sensorId": {
+          "key": true,
+          "type": "cds.String",
+          "length": 40
+        },
+        "timestamp": {
+          "key": true,
+          "type": "cds.Double"
+        },
+        "gatewayTimestamp": {
+          "type": "cds.Double"
+        },
+        "measures": {
+          "type": "cds.Composition",
+          "cardinality": {
+            "max": "*"
+          },
+          "targetAspect": {
+            "elements": {
+              "CO2": {
+                "type": "cds.Integer"
+              },
+              "temperature": {
+                "type": "cds.Double"
+              },
+              "humidity": {
+                "type": "cds.Double"
+              }
+            }
+          },
+          "target": "ambience.IoTData_measures",
+          "on": [
+            {
+              "ref": [
+                "measures",
+                "up_"
+              ]
+            },
+            "=",
+            {
+              "ref": [
+                "$self"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "ambience.IoTData_measures": {
+      "kind": "entity",
+      "elements": {
+        "up__tenantId": {
+          "@odata.containment.ignore": true,
+          "key": true,
+          "type": "cds.String",
+          "length": 40
+        },
+        "up__capabilityId": {
+          "@odata.containment.ignore": true,
+          "key": true,
+          "type": "cds.String",
+          "length": 40
+        },
+        "up__sensorId": {
+          "@odata.containment.ignore": true,
+          "key": true,
+          "type": "cds.String",
+          "length": 40
+        },
+        "up__timestamp": {
+          "@odata.containment.ignore": true,
+          "key": true,
+          "type": "cds.Double"
+        },
+        "up_": {
+          "type": "cds.Association",
+          "cardinality": {
+            "min": 1,
+            "max": 1
+          },
+          "target": "ambience.IoTData",
+          "on": [
+            {
+              "ref": [
+                "up_",
+                "tenantId"
+              ]
+            },
+            "=",
+            {
+              "ref": [
+                "up__tenantId"
+              ]
+            },
+            "and",
+            {
+              "ref": [
+                "up_",
+                "capabilityId"
+              ]
+            },
+            "=",
+            {
+              "ref": [
+                "up__capabilityId"
+              ]
+            },
+            "and",
+            {
+              "ref": [
+                "up_",
+                "sensorId"
+              ]
+            },
+            "=",
+            {
+              "ref": [
+                "up__sensorId"
+              ]
+            },
+            "and",
+            {
+              "ref": [
+                "up_",
+                "timestamp"
+              ]
+            },
+            "=",
+            {
+              "ref": [
+                "up__timestamp"
+              ]
+            }
+          ]
+        },
+        "CO2": {
+          "type": "cds.Integer"
+        },
+        "temperature": {
+          "type": "cds.Double"
+        },
+        "humidity": {
+          "type": "cds.Double"
+        }
+      }
+    },
+    "ambience.iotDataSac": {
+      "kind": "entity",
+      "query": {
+        "SELECT": {
+          "from": {
+            "ref": [
+              "ambience.IoTData"
+            ]
+          },
+          "columns": [
+            {
+              "key": true,
+              "ref": [
+                "IoTData",
+                "sensorId"
+              ]
+            },
+            {
+              "key": true,
+              "func": "ADD_SECONDS",
+              "args": [
+                {
+                  "func": "TO_TIMESTAMP",
+                  "args": [
+                    {
+                      "val": "1970-01-01 00:00:00"
+                    }
+                  ]
+                },
+                {
+                  "xpr": [
+                    {
+                      "ref": [
+                        "IoTData",
+                        "timestamp"
+                      ]
+                    },
+                    "/",
+                    {
+                      "val": 1000
+                    }
+                  ]
+                }
+              ],
+              "as": "timestamp",
+              "cast": {
+                "type": "cds.Timestamp"
+              }
+            },
+            {
+              "ref": [
+                "measures",
+                "CO2"
+              ]
+            },
+            {
+              "ref": [
+                "measures",
+                "temperature"
+              ]
+            },
+            {
+              "ref": [
+                "measures",
+                "humidity"
+              ]
+            }
+          ]
+        }
+      },
+      "elements": {
+        "sensorId": {
+          "key": true,
+          "type": "cds.String",
+          "length": 40
+        },
+        "timestamp": {
+          "@Core.Computed": true,
+          "key": true,
+          "type": "cds.Timestamp"
+        },
+        "CO2": {
+          "type": "cds.Integer"
+        },
+        "temperature": {
+          "type": "cds.Double"
+        },
+        "humidity": {
+          "type": "cds.Double"
+        }
+      },
+      "$syntax": "view"
+    },
+    "traffic.TrafficData": {
+      "kind": "entity",
+      "elements": {
+        "tenantId": {
+          "key": true,
+          "type": "cds.String",
+          "length": 40
+        },
+        "capabilityId": {
+          "key": true,
+          "type": "cds.String",
+          "length": 40
+        },
+        "sensorId": {
+          "key": true,
+          "type": "cds.String",
+          "length": 40
+        },
+        "timestamp": {
+          "key": true,
+          "type": "cds.Double"
+        },
+        "gatewayTimestamp": {
+          "type": "cds.Double"
+        },
+        "measures": {
+          "type": "cds.Composition",
+          "cardinality": {
+            "max": "*"
+          },
+          "targetAspect": {
+            "elements": {
+              "id": {
+                "type": "cds.String",
+                "length": 50
+              },
+              "detectionOccurences": {
+                "type": "cds.Integer"
+              },
+              "trackingOccurences": {
+                "type": "cds.Integer"
+              },
+              "measuredSpeed": {
+                "type": "cds.Double"
+              },
+              "class": {
+                "type": "cds.String",
+                "length": 30
+              },
+              "classStdDeviation": {
+                "type": "cds.Double"
+              },
+              "color": {
+                "type": "cds.String",
+                "length": 30
+              },
+              "classAvgPropability": {
+                "type": "cds.Double"
+              },
+              "directionVerbal": {
+                "type": "cds.String",
+                "length": 30
+              },
+              "directionAngle": {
+                "type": "cds.Double"
+              }
+            }
+          },
+          "target": "traffic.TrafficData_measures",
+          "on": [
+            {
+              "ref": [
+                "measures",
+                "up_"
+              ]
+            },
+            "=",
+            {
+              "ref": [
+                "$self"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "traffic.TrafficDataSac": {
+      "kind": "entity",
+      "query": {
+        "SELECT": {
+          "from": {
+            "ref": [
+              "traffic.TrafficData"
+            ]
+          },
+          "columns": [
+            {
+              "key": true,
+              "ref": [
+                "TrafficData",
+                "sensorId"
+              ]
+            },
+            {
+              "key": true,
+              "func": "ADD_SECONDS",
+              "args": [
+                {
+                  "func": "TO_TIMESTAMP",
+                  "args": [
+                    {
+                      "val": "1970-01-01 00:00:00"
+                    }
+                  ]
+                },
+                {
+                  "xpr": [
+                    {
+                      "ref": [
+                        "TrafficData",
+                        "timestamp"
+                      ]
+                    },
+                    "/",
+                    {
+                      "val": 1000
+                    }
+                  ]
+                }
+              ],
+              "as": "timestamp",
+              "cast": {
+                "type": "cds.Timestamp"
+              }
+            },
+            {
+              "ref": [
+                "measures",
+                "id"
+              ]
+            },
+            {
+              "ref": [
+                "measures",
+                "detectionOccurences"
+              ]
+            },
+            {
+              "ref": [
+                "measures",
+                "trackingOccurences"
+              ]
+            },
+            {
+              "ref": [
+                "measures",
+                "measuredSpeed"
+              ]
+            },
+            {
+              "ref": [
+                "measures",
+                "class"
+              ]
+            },
+            {
+              "ref": [
+                "measures",
+                "color"
+              ]
+            }
+          ]
+        }
+      },
+      "elements": {
+        "sensorId": {
+          "key": true,
+          "type": "cds.String",
+          "length": 40
+        },
+        "timestamp": {
+          "@Core.Computed": true,
+          "key": true,
+          "type": "cds.Timestamp"
+        },
+        "id": {
+          "type": "cds.String",
+          "length": 50
+        },
+        "detectionOccurences": {
+          "type": "cds.Integer"
+        },
+        "trackingOccurences": {
+          "type": "cds.Integer"
+        },
+        "measuredSpeed": {
+          "type": "cds.Double"
+        },
+        "class": {
+          "type": "cds.String",
+          "length": 30
+        },
+        "color": {
+          "type": "cds.String",
+          "length": 30
+        }
+      },
+      "$syntax": "view"
+    },
+    "traffic.TrafficData_measures": {
+      "kind": "entity",
+      "elements": {
+        "up__tenantId": {
+          "@odata.containment.ignore": true,
+          "key": true,
+          "type": "cds.String",
+          "length": 40
+        },
+        "up__capabilityId": {
+          "@odata.containment.ignore": true,
+          "key": true,
+          "type": "cds.String",
+          "length": 40
+        },
+        "up__sensorId": {
+          "@odata.containment.ignore": true,
+          "key": true,
+          "type": "cds.String",
+          "length": 40
+        },
+        "up__timestamp": {
+          "@odata.containment.ignore": true,
+          "key": true,
+          "type": "cds.Double"
+        },
+        "up_": {
+          "type": "cds.Association",
+          "cardinality": {
+            "min": 1,
+            "max": 1
+          },
+          "target": "traffic.TrafficData",
+          "on": [
+            {
+              "ref": [
+                "up_",
+                "tenantId"
+              ]
+            },
+            "=",
+            {
+              "ref": [
+                "up__tenantId"
+              ]
+            },
+            "and",
+            {
+              "ref": [
+                "up_",
+                "capabilityId"
+              ]
+            },
+            "=",
+            {
+              "ref": [
+                "up__capabilityId"
+              ]
+            },
+            "and",
+            {
+              "ref": [
+                "up_",
+                "sensorId"
+              ]
+            },
+            "=",
+            {
+              "ref": [
+                "up__sensorId"
+              ]
+            },
+            "and",
+            {
+              "ref": [
+                "up_",
+                "timestamp"
+              ]
+            },
+            "=",
+            {
+              "ref": [
+                "up__timestamp"
+              ]
+            }
+          ]
+        },
+        "id": {
+          "type": "cds.String",
+          "length": 50
+        },
+        "detectionOccurences": {
+          "type": "cds.Integer"
+        },
+        "trackingOccurences": {
+          "type": "cds.Integer"
+        },
+        "measuredSpeed": {
+          "type": "cds.Double"
+        },
+        "class": {
+          "type": "cds.String",
+          "length": 30
+        },
+        "classStdDeviation": {
+          "type": "cds.Double"
+        },
+        "color": {
+          "type": "cds.String",
+          "length": 30
+        },
+        "classAvgPropability": {
+          "type": "cds.Double"
+        },
+        "directionVerbal": {
+          "type": "cds.String",
+          "length": 30
+        },
+        "directionAngle": {
+          "type": "cds.Double"
+        }
+      }
+    }
+  },
+  "meta": {
+    "creator": "CDS Compiler v1.35.0"
+  },
+  "$version": "1.0",
+  "namespace": "ambience"
+}

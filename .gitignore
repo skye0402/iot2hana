@@ -3,7 +3,8 @@ _out
 *.db
 connection.properties
 default-*.json
-gen/
+# Commented out gen folder (for WebIDE)
+#gen/
 node_modules/
 target/
 

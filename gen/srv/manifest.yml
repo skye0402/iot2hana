@@ -1,0 +1,9 @@
+---
+applications:
+  - name: iot2hana-srv
+    path: .
+    memory: 128M
+    buildpacks:
+      - nodejs_buildpack
+    services:
+      - iot2hana-db
