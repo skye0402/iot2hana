@@ -1,4 +1,5 @@
 {
+  "namespace": "ambience",
   "definitions": {
     "AmbientDataService": {
       "@source": "srv/ambient-service.cds",
@@ -262,9 +263,64 @@
           "type": "cds.String",
           "length": 30
         },
+        "directionVerbal": {
+          "type": "cds.String",
+          "length": 30
+        },
+        "directionAngle": {
+          "type": "cds.Double"
+        },
         "color": {
           "type": "cds.String",
           "length": 30
+        },
+        "detectorNumber": {
+          "type": "cds.Integer"
+        }
+      },
+      "$syntax": "projection"
+    },
+    "TrafficDataService.SacTrafficDataAggregated": {
+      "kind": "entity",
+      "@readonly": true,
+      "query": {
+        "SELECT": {
+          "from": {
+            "ref": [
+              "traffic.PredictiveDataSac"
+            ]
+          }
+        }
+      },
+      "elements": {
+        "sensorId": {
+          "type": "cds.String",
+          "length": 40
+        },
+        "timestamp": {
+          "@Core.Computed": true,
+          "type": "cds.Timestamp"
+        },
+        "tclass": {
+          "type": "cds.String",
+          "length": 10
+        },
+        "direction": {
+          "@Core.Computed": true,
+          "type": "cds.String",
+          "length": 1
+        },
+        "count": {
+          "@Core.Computed": true,
+          "type": "cds.Integer"
+        },
+        "avgspeed": {
+          "@Core.Computed": true,
+          "type": "cds.Double"
+        },
+        "medianspeed": {
+          "@Core.Computed": true,
+          "type": "cds.Double"
         }
       },
       "$syntax": "projection"
@@ -343,6 +399,9 @@
               },
               "directionAngle": {
                 "type": "cds.Double"
+              },
+              "detectorNumber": {
+                "type": "cds.Integer"
               }
             }
           },
@@ -495,6 +554,9 @@
         },
         "directionAngle": {
           "type": "cds.Double"
+        },
+        "detectorNumber": {
+          "type": "cds.Integer"
         }
       }
     },
@@ -750,6 +812,307 @@
       },
       "$syntax": "view"
     },
+    "traffic.PredictiveDataSac": {
+      "kind": "entity",
+      "query": {
+        "SELECT": {
+          "from": {
+            "ref": [
+              "traffic.TrafficDataSac"
+            ]
+          },
+          "columns": [
+            {
+              "ref": [
+                "sensorId"
+              ]
+            },
+            {
+              "func": "SERIES_ROUND",
+              "args": [
+                {
+                  "ref": [
+                    "timestamp"
+                  ]
+                },
+                {
+                  "val": "INTERVAL 15 MINUTE"
+                }
+              ],
+              "as": "timestamp",
+              "cast": {
+                "type": "cds.Timestamp"
+              }
+            },
+            {
+              "ref": [
+                "class"
+              ],
+              "as": "tclass",
+              "cast": {
+                "type": "cds.String",
+                "length": 10
+              }
+            },
+            {
+              "func": "MAP",
+              "args": [
+                {
+                  "ref": [
+                    "directionVerbal"
+                  ]
+                },
+                {
+                  "val": "N"
+                },
+                {
+                  "val": "X"
+                },
+                {
+                  "val": "S"
+                },
+                {
+                  "val": "X"
+                },
+                {
+                  "val": "SE"
+                },
+                {
+                  "val": "E"
+                },
+                {
+                  "val": "SW"
+                },
+                {
+                  "val": "W"
+                },
+                {
+                  "val": "NE"
+                },
+                {
+                  "val": "E"
+                },
+                {
+                  "val": "NW"
+                },
+                {
+                  "val": "W"
+                },
+                {
+                  "val": "E"
+                },
+                {
+                  "val": "E"
+                },
+                {
+                  "val": "W"
+                },
+                {
+                  "val": "W"
+                },
+                {
+                  "val": "X"
+                }
+              ],
+              "as": "direction",
+              "cast": {
+                "type": "cds.String",
+                "length": 1
+              }
+            },
+            {
+              "func": "COUNT",
+              "args": [
+                {
+                  "ref": [
+                    "id"
+                  ]
+                }
+              ],
+              "as": "count",
+              "cast": {
+                "type": "cds.Integer"
+              }
+            },
+            {
+              "xpr": [
+                {
+                  "func": "AVG",
+                  "args": [
+                    {
+                      "ref": [
+                        "measuredSpeed"
+                      ]
+                    }
+                  ]
+                },
+                "*",
+                {
+                  "val": "3.6",
+                  "literal": "number"
+                }
+              ],
+              "as": "avgspeed",
+              "cast": {
+                "type": "cds.Double"
+              }
+            },
+            {
+              "xpr": [
+                {
+                  "func": "MEDIAN",
+                  "args": [
+                    {
+                      "ref": [
+                        "measuredSpeed"
+                      ]
+                    }
+                  ]
+                },
+                "*",
+                {
+                  "val": "3.6",
+                  "literal": "number"
+                }
+              ],
+              "as": "medianspeed",
+              "cast": {
+                "type": "cds.Double"
+              }
+            }
+          ],
+          "groupBy": [
+            {
+              "ref": [
+                "sensorId"
+              ]
+            },
+            {
+              "func": "SERIES_ROUND",
+              "args": [
+                {
+                  "ref": [
+                    "timestamp"
+                  ]
+                },
+                {
+                  "val": "INTERVAL 15 MINUTE"
+                }
+              ]
+            },
+            {
+              "ref": [
+                "class"
+              ]
+            },
+            {
+              "func": "MAP",
+              "args": [
+                {
+                  "ref": [
+                    "directionVerbal"
+                  ]
+                },
+                {
+                  "val": "N"
+                },
+                {
+                  "val": "X"
+                },
+                {
+                  "val": "S"
+                },
+                {
+                  "val": "X"
+                },
+                {
+                  "val": "SE"
+                },
+                {
+                  "val": "E"
+                },
+                {
+                  "val": "SW"
+                },
+                {
+                  "val": "W"
+                },
+                {
+                  "val": "NE"
+                },
+                {
+                  "val": "E"
+                },
+                {
+                  "val": "NW"
+                },
+                {
+                  "val": "W"
+                },
+                {
+                  "val": "E"
+                },
+                {
+                  "val": "E"
+                },
+                {
+                  "val": "W"
+                },
+                {
+                  "val": "W"
+                },
+                {
+                  "val": "X"
+                }
+              ]
+            }
+          ],
+          "where": [
+            {
+              "ref": [
+                "measuredSpeed"
+              ]
+            },
+            ">",
+            {
+              "val": 0
+            }
+          ]
+        }
+      },
+      "elements": {
+        "sensorId": {
+          "type": "cds.String",
+          "length": 40
+        },
+        "timestamp": {
+          "@Core.Computed": true,
+          "type": "cds.Timestamp"
+        },
+        "tclass": {
+          "type": "cds.String",
+          "length": 10
+        },
+        "direction": {
+          "@Core.Computed": true,
+          "type": "cds.String",
+          "length": 1
+        },
+        "count": {
+          "@Core.Computed": true,
+          "type": "cds.Integer"
+        },
+        "avgspeed": {
+          "@Core.Computed": true,
+          "type": "cds.Double"
+        },
+        "medianspeed": {
+          "@Core.Computed": true,
+          "type": "cds.Double"
+        }
+      },
+      "$syntax": "view"
+    },
     "traffic.TrafficData": {
       "kind": "entity",
       "elements": {
@@ -815,6 +1178,9 @@
               },
               "directionAngle": {
                 "type": "cds.Double"
+              },
+              "detectorNumber": {
+                "type": "cds.Integer"
               }
             }
           },
@@ -918,7 +1284,25 @@
             {
               "ref": [
                 "measures",
+                "directionVerbal"
+              ]
+            },
+            {
+              "ref": [
+                "measures",
+                "directionAngle"
+              ]
+            },
+            {
+              "ref": [
+                "measures",
                 "color"
+              ]
+            },
+            {
+              "ref": [
+                "measures",
+                "detectorNumber"
               ]
             }
           ]
@@ -952,9 +1336,19 @@
           "type": "cds.String",
           "length": 30
         },
+        "directionVerbal": {
+          "type": "cds.String",
+          "length": 30
+        },
+        "directionAngle": {
+          "type": "cds.Double"
+        },
         "color": {
           "type": "cds.String",
           "length": 30
+        },
+        "detectorNumber": {
+          "type": "cds.Integer"
         }
       },
       "$syntax": "view"
@@ -1079,13 +1473,85 @@
         },
         "directionAngle": {
           "type": "cds.Double"
+        },
+        "detectorNumber": {
+          "type": "cds.Integer"
+        }
+      }
+    },
+    "traffic.meteoData": {
+      "kind": "entity",
+      "elements": {
+        "timestamp": {
+          "key": true,
+          "type": "cds.Timestamp"
+        },
+        "temperature": {
+          "type": "cds.Double"
+        },
+        "precipitation": {
+          "type": "cds.Double"
+        },
+        "noInfoPrecipitation": {
+          "type": "cds.Integer"
+        },
+        "snowfall": {
+          "type": "cds.Double"
+        },
+        "noInfoSnowfall": {
+          "type": "cds.Integer"
+        },
+        "snowfallHeight": {
+          "type": "cds.Double"
+        },
+        "noInfoSnowfallHeight": {
+          "type": "cds.Integer"
+        },
+        "sunshineHours": {
+          "type": "cds.Double"
+        },
+        "noInfoSunshineHours": {
+          "type": "cds.Integer"
+        },
+        "windspeed": {
+          "type": "cds.Double"
+        },
+        "winddirection": {
+          "type": "cds.String",
+          "length": 8
+        },
+        "airpressureLocal": {
+          "type": "cds.Double"
+        },
+        "solarradiation": {
+          "type": "cds.Double"
+        },
+        "airpressureAtSeaLevel": {
+          "type": "cds.Double"
+        },
+        "relativeHumidity": {
+          "type": "cds.Integer"
+        },
+        "vaporPressure": {
+          "type": "cds.Double"
+        },
+        "cloudiness": {
+          "type": "cds.Integer"
+        },
+        "weather": {
+          "type": "cds.Integer"
+        },
+        "visibility": {
+          "type": "cds.Integer"
+        },
+        "dewPointTemperature": {
+          "type": "cds.Double"
         }
       }
     }
   },
   "meta": {
-    "creator": "CDS Compiler v1.35.0"
+    "creator": "CDS Compiler v1.39.0"
   },
-  "$version": "1.0",
-  "namespace": "ambience"
+  "$version": "1.0"
 }
